@@ -1,0 +1,1 @@
+python main.py --mode 'train' --data_root 'galaxy_512'
