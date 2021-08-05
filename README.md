@@ -34,8 +34,12 @@ This repository provides
 Our running environment is as follows:
 
 - Python version 3.8.3
-- Pytorch version 1.7.0 (We used pytorch official [docker image](https://hub.docker.com/r/pytorch/pytorch/tags?page=1&ordering=last_updated&name=1.7.0).)
+- Pytorch version 1.7.0
 - CUDA version 11.2
+
+We provide a docker image, which supports all extra requirements, including specified version of python, pytorch, CUDA above.
+
+You can download the docker image [here](https://hub.docker.com/r/dongyoung95/torch1.7_lsmi).
 
 In an environment that meets the above requirements, run the following code to install additional requirements:
 ```sh
