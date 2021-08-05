@@ -67,9 +67,9 @@ Move all three folders to the root of cloned repository.
 
    The image and the mixture map are resized as a square with a length of the **SIZE** variable inside the code, and the ground-truth image is also generated.
 
-   We set the size to **256** to test the U-Net, and **512** for training the U-Net.
+   We set the size to **256** to test the U-Net, and **512** for train the U-Net.
 
-   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Eg. galaxy_512)
+   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_512)
 
    As mentioned above, we use \*\*\*_512 as a train set, \*\*\*_256 as a test set.
 
