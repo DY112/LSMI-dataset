@@ -12,7 +12,7 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SIZE = 512              # size of output image
+SIZE = 256              # size of output image
 CAMERA = "galaxy"       # LSMI subset camera
 DST_ROOT = CAMERA + "_" + str(SIZE)
 ZERO_MASK = -1          # Zero mask value for black pixels
