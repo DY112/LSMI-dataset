@@ -31,6 +31,13 @@ This repository provides
 2. Code of Pixel-level illumination inference U-Net
 3. Pre-trained model parameter for testing U-Net
 
+## Requirements
+Our running environment is as follows:
+
+- Python version 3.8.3
+- Pytorch version 1.7.0 (We used pytorch official [docker image](https://hub.docker.com/r/pytorch/pytorch/tags?page=1&ordering=last_updated&name=1.7.0).)
+- CUDA version 11.2
+
 <!-- GETTING STARTED -->
 ## Getting Started
 ### Download the LSMI dataset
@@ -38,17 +45,11 @@ You should first download the LSMI dataset from [here](https://www.kaggle.com/ci
 
 The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
 
-Each folder provides full-resolution raw image file
+Folders named by each camera include several scenes, and each scene folder contains full-resolution RAW files and JPG files that is converted to sRGB color space.
 
-Move the dataset folders into 
+Move the downloaded dataset to each folder in the cloned repository (galaxy,nikon,sony).
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
+### Convert raw type images into tiff type
 
 1. Clone the repo
    ```sh
