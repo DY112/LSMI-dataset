@@ -44,7 +44,14 @@ Move all three folders to the root of cloned repository.
 
 ### Preprocess the LSMI dataset
 
-0. Convert raw images to tiff files
+0. Convert raw images to tiff files  
+   
+   This step is already processed, so tiff files will be already included in the dataset.
+
+   So you can pass this step.
+   
+   If you want to re-process dcraw conversion, run following code:
+
    ```sh
    python 0_cvt2tiff.py
    ```
