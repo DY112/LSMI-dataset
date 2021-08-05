@@ -73,7 +73,7 @@ Move all three folders to the root of cloned repository.
 
    The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_256)
 
-### Test U-Net using pre-trained parameter
+### Use U-Net for pixel-level AWB
 
 You can download pre-trained model parameter [here]().
 
