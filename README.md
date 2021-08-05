@@ -1,7 +1,5 @@
 # Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination (ICCV 2021)
 
-## [[Project site]](https://dykim.ml/publication/lsmi/) [[Arxiv]]() [[Download Dataset]](https://www.kaggle.com/ciplab/datasets)
-
 <!-- TABLE OF CONTENTS -->
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
   <ol>
@@ -23,6 +21,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About
+[[Project site]](https://dykim.ml/publication/lsmi/) [[Arxiv]]() [[Download Dataset]](https://www.kaggle.com/ciplab/datasets)
 
 This is an official repository of ICCV 2021 paper, **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**.
 
@@ -37,6 +36,12 @@ Our running environment is as follows:
 - Python version 3.8.3
 - Pytorch version 1.7.0 (We used pytorch official [docker image](https://hub.docker.com/r/pytorch/pytorch/tags?page=1&ordering=last_updated&name=1.7.0).)
 - CUDA version 11.2
+
+In an environment that meets the above requirements, run the following code to install additional requirements:
+```sh
+pip install requirements.txt
+```
+
 
 <!-- GETTING STARTED -->
 ## Getting Started
