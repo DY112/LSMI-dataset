@@ -1,29 +1,10 @@
 # Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination (ICCV 2021)
 
-<!-- TABLE OF CONTENTS -->
-  <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About</a>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
-  </ol>
-
-
 <!-- ABOUT THE PROJECT -->
 ## About
 [[Project site]](https://dykim.ml/publication/lsmi/) [[Arxiv]]() [[Download Dataset]](https://www.kaggle.com/ciplab/datasets)
 
-This is an official repository of ICCV 2021 paper, **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**.
+This is an official repository of **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**, which is accepted as a poster in ICCV 2021.
 
 This repository provides  
 1. Preprocess code of "Large Scale Multi Illuminant (LSMI) Dataset"
@@ -37,18 +18,21 @@ Our running environment is as follows:
 - Pytorch version 1.7.0
 - CUDA version 11.2
 
-We provide a docker image, which supports all extra requirements, including specified version of python, pytorch, CUDA above.
+We provide a docker image, which supports all extra requirements (ex. dcraw,rawpy,tensorboard...), including specified version of python, pytorch, CUDA above.
 
 You can download the docker image [here](https://hub.docker.com/r/dongyoung95/torch1.7_lsmi).
 
-In an environment that meets the above requirements, run the following code to install additional requirements:
-```sh
-pip install requirements.txt
-```
-
+The following instructions are assumed to run in a docker container that uses the docker image we provided.
 
 <!-- GETTING STARTED -->
 ## Getting Started
+### Clone this repo
+In the docker container, clone this repository first.
+
+```sh
+git clone https://github.com/DY112/LSMI-dataset.git
+```
+
 ### Download the LSMI dataset
 You should first download the LSMI dataset from [here](https://www.kaggle.com/ciplab/datasets).
 
@@ -56,48 +40,42 @@ The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
 
 Folders named by each camera include several scenes, and each scene folder contains full-resolution RAW files and JPG files that is converted to sRGB color space.
 
-Move the downloaded dataset to each folder in the cloned repository (galaxy,nikon,sony).
+Move all three folders to the root of cloned repository.
 
-### Convert raw type images into tiff type
+### Preprocess the LSMI dataset
 
-1. Clone the repo
+0. Convert raw images to tiff files
    ```sh
-   git clone https://github.com/DY112/LSMI-dataset.git
+   python 0_cvt2tiff.py
    ```
-2. Install NPM packages
+   You should modify **SOURCE** and **EXT** variables properly.
+
+   The converted tiff files are generated at the same location as the source file.
+
+1. Make mixture map
    ```sh
-   npm install
+   python 1_make_mixture_map.py
+   ```
+   Change the **CAMERA** variable properly to the target directory you want.
+   
+   .npy tpye mixture map data will be generated at each scene's directory.
+
+2. Crop
+   ```sh
+   python 2_preprocess_data.py
    ```
 
+   The image and the mixture map are resized as a square with a length of the **SIZE** variable inside the code, and the ground-truth image is also generated.
 
+   We set the size to **256** to test the U-Net, and **512** for training the U-Net.
 
-<!-- USAGE EXAMPLES -->
-## Usage
+   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Eg. galaxy_512)
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://github.com/DY112/LSMI-dataset/issues) for a list of proposed features (and known issues).
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+   As mentioned above, we use \*\*\*_512 as a train set, \*\*\*_256 as a test set.
 
 
 
-<!-- CONTACT -->
-## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email
-
-Project Link: [https://github.com/DY112/LSMI-dataset](https://github.com/DY112/LSMI-dataset)
 
 
 
