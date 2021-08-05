@@ -69,21 +69,36 @@ Move all three folders to the root of cloned repository.
 
    We set the size to **256** to test the U-Net, and **512** for train the U-Net.
 
-   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_512)
+   Here, to test the pre-trained U-Net, set size to 256.
 
-   As mentioned above, we use \*\*\*_512 as a train set, \*\*\*_256 as a test set.
+   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_256)
+
+### Test U-Net using pre-trained parameter
+
+You can download pre-trained model parameter [here]().
+
+Pre-trained model is trained on 512x512 data with random crop & random pixel level relighting augmentation method.
+
+Locate downloaded **models** folder into **SVWB_Unet**.
+
+- Test U-Net  
+  ```sh
+  cd SVWB_Unet
+  sh test.sh
+  ```
+
+- Train U-Net
+  ```sh
+  cd SVWB_Unet
+  sh train.sh
+  ```
 
 
-
-
-
-
-
-<!-- ACKNOWLEDGEMENTS -->
+<!-- 
 ## Acknowledgements
 
 * []()
 * []()
 * []()
-
+ -->
 
