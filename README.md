@@ -75,7 +75,7 @@ Move all three folders to the root of cloned repository.
 
 ### Use U-Net for pixel-level AWB
 
-You can download pre-trained model parameter [here]().
+You can download pre-trained model parameter [here](https://drive.google.com/drive/folders/1m0Jt6vTkRJi_iMDDnhcW79QmE48MGVUP?usp=sharing).
 
 Pre-trained model is trained on 512x512 data with random crop & random pixel level relighting augmentation method.
 
