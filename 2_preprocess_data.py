@@ -12,9 +12,9 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SIZE = 256              # size of train/val image
+SIZE = 512              # size of train/val image
 TEST_SIZE = 256         # size of test image
-CAMERA = "galaxy"       # LSMI subset camera
+CAMERA = "nikon"       # LSMI subset camera
 DST_ROOT = CAMERA + "_" + str(SIZE)
 ZERO_MASK = -1          # Zero mask value for black pixels
 
