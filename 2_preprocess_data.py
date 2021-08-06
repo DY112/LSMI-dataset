@@ -12,7 +12,8 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SIZE = 256              # size of output image
+SIZE = 256              # size of train/val image
+TEST_SIZE = 256         # size of test image
 CAMERA = "galaxy"       # LSMI subset camera
 DST_ROOT = CAMERA + "_" + str(SIZE)
 ZERO_MASK = -1          # Zero mask value for black pixels
@@ -93,14 +94,19 @@ for key, places in split_data.items():
             mixmap_crop = np.where(mixmap_crop==ZERO_MASK,0,mixmap_crop)
             
             # resize & save
-            img_resize = cv2.resize(img_crop, dsize=(SIZE,SIZE), interpolation=cv2.INTER_LINEAR).astype('uint16')
-            img_wb_resize = cv2.resize(img_wb_crop, dsize=(SIZE,SIZE), interpolation=cv2.INTER_LINEAR).astype('uint16')
-            mixmap_resize = cv2.resize(mixmap_crop, dsize=(SIZE,SIZE), interpolation=cv2.INTER_LINEAR)
+            if split == 'test':
+                resize_len = TEST_SIZE
+            else:
+                resize_len = SIZE
+
+            img_resize = cv2.resize(img_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR).astype('uint16')
+            img_wb_resize = cv2.resize(img_wb_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR).astype('uint16')
+            mixmap_resize = cv2.resize(mixmap_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR)
             cv2.imwrite(os.path.join(dst_path,file), cv2.cvtColor(img_resize,cv2.COLOR_RGB2BGR))
             cv2.imwrite(os.path.join(dst_path,fname+"_gt.tiff"), cv2.cvtColor(img_wb_resize,cv2.COLOR_RGB2BGR))
             if split == "train":
                 mask_crop = mask_org[:,w_start:w_end,:]
-                mask_resize = cv2.resize(mask_crop, dsize=(SIZE,SIZE), interpolation=cv2.INTER_LINEAR)
+                mask_resize = cv2.resize(mask_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR)
                 cv2.imwrite(os.path.join(dst_path,place+"_mask.png"), mask_resize)
             if len(illum_count) != 1:
                 np.save(os.path.join(dst_path,fname), mixmap_resize)
