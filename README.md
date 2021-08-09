@@ -7,7 +7,7 @@
 This is an official repository of **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**, which is accepted as a poster in ICCV 2021.
 
 This repository provides  
-1. Preprocess code of "Large Scale Multi Illuminant (LSMI) Dataset"
+1. Preprocessing code of "Large Scale Multi Illuminant (LSMI) Dataset"
 2. Code of Pixel-level illumination inference U-Net
 3. Pre-trained model parameter for testing U-Net
 
