@@ -2,7 +2,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About
-[[Project site]](https://dykim.me/publication/lsmi/) [[Arxiv]]() [[Download Dataset]](https://www.kaggle.com/ciplab/datasets)
+[[Project site]](https://dykim.me/publication/lsmi/) [[Arxiv]]() [[Download Dataset]](https://drive.google.com/drive/folders/14RKJRiG0R5njERnrrsQePz30EJc08Sxd?usp=sharing)
 
 This is an official repository of **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**, which is accepted as a poster in ICCV 2021.
 
