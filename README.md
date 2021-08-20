@@ -34,7 +34,7 @@ git clone https://github.com/DY112/LSMI-dataset.git
 ```
 
 ### Download the LSMI dataset
-You should first download the LSMI dataset from [here](https://www.kaggle.com/ciplab/datasets).
+You should first download the LSMI dataset from [here](https://drive.google.com/drive/folders/14RKJRiG0R5njERnrrsQePz30EJc08Sxd?usp=sharing).
 
 The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
 
