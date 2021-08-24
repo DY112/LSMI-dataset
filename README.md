@@ -6,7 +6,7 @@
 ## About
 [[Project site]](https://dykim.me/publication/lsmi/)
 [[Arxiv]]() 
-[[Download Dataset]](https://drive.google.com/drive/folders/14RKJRiG0R5njERnrrsQePz30EJc08Sxd?usp=sharing)
+[[Download Dataset]](https://drive.google.com/drive/)
 
 This is an official repository of **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**, which is accepted as a poster in ICCV 2021.
 
@@ -38,7 +38,7 @@ git clone https://github.com/DY112/LSMI-dataset.git
 ```
 
 ### Download the LSMI dataset
-You should first download the LSMI dataset from [here](https://drive.google.com/drive/folders/14RKJRiG0R5njERnrrsQePz30EJc08Sxd?usp=sharing).
+You should first download the LSMI dataset from [here](https://drive.google.com/drive/).
 
 The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
 
