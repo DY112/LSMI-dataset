@@ -202,10 +202,13 @@ def get_loader(config, split):
         # train mode & random crop
         tsfm = transforms.Compose([ToTensor(),
                                    PairedRandomCrop(size=(config.image_size,config.image_size),scale=(0.3,1.0),ratio=(1.,1.))])
-    else:
-        # validation & test mode or train mode without random crop
+    elif config.image_size != None:
+        # validation & test mode or train mode without random crop / square resizing
         tsfm = transforms.Compose([ToTensor(),
                                    Resize(size=(config.image_size,config.image_size))])
+    else :
+        # validation & test mode or train mode without random crop / original image size
+        tsfm = transforms.Compose([ToTensor()])
 
     dataset = LSMI(root=config.data_root,
                    split=split,
