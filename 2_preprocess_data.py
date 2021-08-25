@@ -12,10 +12,14 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SIZE = 512              # size of train/val image
-TEST_SIZE = 256         # size of test image
-CAMERA = "nikon"       # LSMI subset camera
-DST_ROOT = CAMERA + "_" + str(SIZE)
+SQUARE_CROP = True
+SIZE = 512              # Size of train/val image. If None, keep the original resolution.
+TEST_SIZE = 256         # Size of test image. If None, keep the original resolution.
+CAMERA = "galaxy"       # LSMI subset camera
+if SIZE != None:
+    DST_ROOT = CAMERA + "_" + str(SIZE)
+else:
+    DST_ROOT = CAMERA + "_fullres"
 ZERO_MASK = -1          # Zero mask value for black pixels
 
 RAW = CAMERA+".dng"
@@ -52,12 +56,12 @@ for key, places in split_data.items():
             illum_count = fname.split("_")[1]
 
             # open tiff image & subtract black level
-            img_org = cv2.cvtColor(cv2.imread(os.path.join(CAMERA,place,file), cv2.IMREAD_UNCHANGED),cv2.COLOR_BGR2RGB).astype('float32')
-            img_org = np.clip(img_org - BLACK_LEVEL, 0, SATURATION)
+            img = cv2.cvtColor(cv2.imread(os.path.join(CAMERA,place,file), cv2.IMREAD_UNCHANGED),cv2.COLOR_BGR2RGB).astype('float32')
+            img = np.clip(img - BLACK_LEVEL, 0, SATURATION)
             
             # make pixel-level illumination map
             if len(illum_count) == 1:
-                mixmap = np.ones_like(img_org[:,:,0:1],dtype=np.float)
+                mixmap = np.ones_like(img[:,:,0:1],dtype=np.float)
             else:
                 mixmap = np.load(os.path.join(CAMERA,place,fname+".npy"))
             illum_chroma = [[0,0,0],[0,0,0],[0,0,0]]
@@ -68,30 +72,31 @@ for key, places in split_data.items():
             illum_map[x_zero,y_zero,:] = [1.,1.,1.]
 
             # white balance original image
-            img_wb = img_org / illum_map
+            img_wb = img / illum_map
 
             # apply MCC mask to original image, GT image (training set)
             if split == "train":
-                mask_org = np.ones_like(img_org[:,:,0:1], dtype='float32')
+                mask = np.ones_like(img[:,:,0:1], dtype='float32')
                 mcc1 = (np.float32(meta_data[place]["MCCCoord"]["mcc1"]) / 2).astype(np.int)
                 mcc2 = (np.float32(meta_data[place]["MCCCoord"]["mcc2"]) / 2).astype(np.int)
                 mcc3 = (np.float32(meta_data[place]["MCCCoord"]["mcc3"]) / 2).astype(np.int)
                 mcc_list = [mcc1.tolist(),mcc2.tolist(),mcc3.tolist()]
                 for mcc in mcc_list:
                     contour = np.array([[mcc[0]],[mcc[1]],[mcc[2]],[mcc[3]]]).astype(np.int)
-                    cv2.drawContours(mask_org, [contour], 0, (0), -1)
-                img_org = img_org * mask_org
-                img_wb = img_wb * mask_org
+                    cv2.drawContours(mask, [contour], 0, (0), -1)
+                img = img * mask
+                img_wb = img_wb * mask
 
-            # Crop original image, GT image, MCC mask, mixmap
-            height, width, _ = img_org.shape
-            w_start = int(width/2) - int(height/2)
-            w_end = w_start + height
-            img_crop = img_org[:,w_start:w_end,:]
-            img_wb_crop = img_wb[:,w_start:w_end,:]
-            mixmap_crop = mixmap[:,w_start:w_end,:]
-            # prevent negative mask value interpolation if ZERO_MASK is negative value
-            mixmap_crop = np.where(mixmap_crop==ZERO_MASK,0,mixmap_crop)
+            # Crop original image, GT image, mixmap
+            if SQUARE_CROP:
+                height, width, _ = img.shape
+                w_start = int(width/2) - int(height/2)
+                w_end = w_start + height
+                img = img[:,w_start:w_end,:]
+                img_wb = img_wb[:,w_start:w_end,:]
+                mixmap = mixmap[:,w_start:w_end,:]
+                # prevent negative mask value interpolation if ZERO_MASK is negative value
+                mixmap = np.where(mixmap==ZERO_MASK,0,mixmap)
             
             # resize & save
             if split == 'test':
@@ -99,17 +104,25 @@ for key, places in split_data.items():
             else:
                 resize_len = SIZE
 
-            img_resize = cv2.resize(img_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR).astype('uint16')
-            img_wb_resize = cv2.resize(img_wb_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR).astype('uint16')
-            mixmap_resize = cv2.resize(mixmap_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR)
-            cv2.imwrite(os.path.join(dst_path,file), cv2.cvtColor(img_resize,cv2.COLOR_RGB2BGR))
-            cv2.imwrite(os.path.join(dst_path,fname+"_gt.tiff"), cv2.cvtColor(img_wb_resize,cv2.COLOR_RGB2BGR))
+            if resize_len != None:
+                img = cv2.resize(img, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR).astype('uint16')
+                img_wb = cv2.resize(img_wb, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR).astype('uint16')
+                mixmap = cv2.resize(mixmap, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR)
+            else:
+                img = img.astype('uint16')
+                img_wb = img_wb.astype('uint16')
+                
+            # save image, GT image, MCC mask, mixmap
+            cv2.imwrite(os.path.join(dst_path,file), cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
+            cv2.imwrite(os.path.join(dst_path,fname+"_gt.tiff"), cv2.cvtColor(img_wb,cv2.COLOR_RGB2BGR))
             if split == "train":
-                mask_crop = mask_org[:,w_start:w_end,:]
-                mask_resize = cv2.resize(mask_crop, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR)
-                cv2.imwrite(os.path.join(dst_path,place+"_mask.png"), mask_resize)
+                if SQUARE_CROP:
+                    mask = mask[:,w_start:w_end,:]
+                if resize_len != None:
+                    mask = cv2.resize(mask, dsize=(resize_len,resize_len), interpolation=cv2.INTER_LINEAR)
+                cv2.imwrite(os.path.join(dst_path,place+"_mask.png"), mask)
             if len(illum_count) != 1:
-                np.save(os.path.join(dst_path,fname), mixmap_resize)
+                np.save(os.path.join(dst_path,fname), mixmap)
 
         # delete original MCC coordinates in meta json
         meta_data[place].pop("MCCCoord")
