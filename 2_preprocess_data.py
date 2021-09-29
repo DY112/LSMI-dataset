@@ -12,7 +12,7 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SQUARE_CROP = True
+SQUARE_CROP = True      # Trim left/right sides of the image so that it is square.
 SIZE = 512              # Size of train/val image. If None, keep the original resolution.
 TEST_SIZE = 256         # Size of test image. If None, keep the original resolution.
 CAMERA = "galaxy"       # LSMI subset camera
