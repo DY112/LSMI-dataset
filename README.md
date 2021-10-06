@@ -1,5 +1,7 @@
 # Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination (ICCV 2021)
 
+[![LSMI video](https://www.youtube.com/watch?v=oCH22baHGBs/0.jpg)](https://www.youtube.com/watch?v=oCH22baHGBs)
+
 <img width="600" alt="스크린샷 2021-08-21 오후 3 30 22" src="https://user-images.githubusercontent.com/24367643/130312876-5b2955c2-0176-4e87-ba90-7c466fa3961b.png">
 
 <!-- ABOUT THE PROJECT -->
