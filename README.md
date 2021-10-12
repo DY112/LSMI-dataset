@@ -78,11 +78,11 @@ Move all three folders to the root of cloned repository.
 
    The image and the mixture map are resized as a square with a length of the **SIZE** variable inside the code, and the ground-truth image is also generated.
    
-   Note that the side of the image will be cropped to make the image square.
+   Note that the side of the image will be cropped to make the image shape square.
    
-   If you don't want to crop the side of the image and just want to resize whole image anyway, use **CROP=False**
+   If you don't want to crop the side of the image and just want to resize whole image anyway, use **SQUARE_CROP=False**
 
-   We set the default test size to **256**, and set train size to **512**, and **CROP=True**.
+   We set the default test size to **256**, and set train size to **512**, and **SQUARE_CROP=True**.
 
    The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_512)
 
