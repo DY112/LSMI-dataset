@@ -77,12 +77,14 @@ Move all three folders to the root of cloned repository.
    ```
 
    The image and the mixture map are resized as a square with a length of the **SIZE** variable inside the code, and the ground-truth image is also generated.
+   
+   Note that the side of the image will be cropped to make the image square.
+   
+   If you don't want to crop the side of the image and just want to resize whole image anyway, use **CROP=False**
 
-   We set the size to **256** to test the U-Net, and **512** for train the U-Net.
+   We set the default test size to **256**, and set train size to **512**, and **CROP=True**.
 
-   Here, to test the pre-trained U-Net, set size to 256.
-
-   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_256)
+   The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_512)
 
 ### Use U-Net for pixel-level AWB
 
