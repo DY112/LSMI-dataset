@@ -19,6 +19,17 @@ This repository provides
 2. Code of Pixel-level illumination inference U-Net
 3. Pre-trained model parameter for testing U-Net
 
+If you use our code or dataset, please cite our paper:
+```
+@inproceedings{kim2021large,
+  title={Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm Under Mixed Illumination},
+  author={Kim, Dongyoung and Kim, Jinwoo and Nam, Seonghyeon and Lee, Dongwoo and Lee, Yeonkyung and Kang, Nahyup and Lee, Hyong-Euk and Yoo, ByungIn and Han, Jae-Joon and Kim, Seon Joo},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={2410--2419},
+  year={2021}
+}
+```
+
 ## Requirements
 Our running environment is as follows:
 
