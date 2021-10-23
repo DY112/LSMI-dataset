@@ -1,0 +1,9 @@
+galaxy*/*
+nikon*/*
+sony*/*
+*.pt
+*.pyc
+**/models/
+**/results/
+**/logs/
+.DS_Store
