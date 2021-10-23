@@ -11,15 +11,16 @@ from torchvision.transforms import RandomResizedCrop
 
 class LSMI(data.Dataset):
     def __init__(self,root,split,image_pool,
-                 input_type='uvl',output_type=None,
-                 mask_black=None,mask_highlight=None,
+                 input_type='uvl',output_type=None,uncalculable=-1,
+                 mask_uncalculable=None,mask_highlight=None,
                  illum_augmentation=None,transform=None):
         self.root = root                        # dataset root
         self.split = split                      # train / val / test
         self.image_pool = image_pool            # 1 / 2 / 3
         self.input_type = input_type            # uvl / rgb
         self.output_type = output_type          # None / illumination / uv
-        self.mask_black = mask_black            # None or Masked value for black pixels
+        self.uncalculable = uncalculable        # Masked value for uncalculable mixture
+        self.mask_uncalculable = mask_uncalculable  # None or Masking value for uncalculable mixture
         self.mask_highlight = mask_highlight    # None or Saturation value
         self.random_color = illum_augmentation
         self.transform = transform
@@ -70,12 +71,15 @@ class LSMI(data.Dataset):
             mixmap = np.load(os.path.join(self.root,self.split,mixmap_file)).astype('float32')
         else:
             mixmap = np.ones_like(input_rgb[:,:,0:1])
+        # mixmap contains -1 for ZERO_MASK, which means uncalculable pixels with LSMI's G channel approximation.
+        # So we must replace negative values to 0 if we use pixel level augmentation.
+        uncalculable_masked_mixmap = np.where(mixmap==self.uncalculable,0,mixmap)
 
         # random data augmentation
         if self.random_color and self.split=='train':
             augment_chroma = self.random_color(illum_count)
             ret_dict["illum_chroma"] *= augment_chroma
-            tint_map = mix_chroma(mixmap,augment_chroma,illum_count)
+            tint_map = mix_chroma(uncalculable_masked_mixmap,augment_chroma,illum_count)
             input_rgb = input_rgb * tint_map    # apply augmentation to input image
 
         # prepare input tensor
@@ -83,7 +87,7 @@ class LSMI(data.Dataset):
         ret_dict["input_uvl"] = rgb2uvl(input_rgb)
         
         # prepare output tensor
-        illum_map = mix_chroma(mixmap,ret_dict["illum_chroma"],illum_count)
+        illum_map = mix_chroma(uncalculable_masked_mixmap,ret_dict["illum_chroma"],illum_count)
         ret_dict["gt_illum"] = np.delete(illum_map, 1, axis=2)
         output_bgr = cv2.imread(os.path.join(self.root,self.split,fname+"_gt.tiff"), cv2.IMREAD_UNCHANGED).astype('float32')
         output_rgb = cv2.cvtColor(output_bgr, cv2.COLOR_BGR2RGB)
@@ -97,8 +101,8 @@ class LSMI(data.Dataset):
             mask = mask[:,:,None].astype('float32')
         else:
             mask = np.ones_like(input_rgb[:,:,0:1], dtype='float32')
-        if self.mask_black != None:
-            mask[input_rgb[:,:,1:2]==0] = self.mask_black
+        if self.mask_uncalculable != None:
+            mask[mixmap[:,:,0]==self.uncalculable] = self.mask_uncalculable
         if self.mask_highlight != None:
             raise NotImplementedError("Implement highlight masking!")
         ret_dict["mask"] = mask
@@ -215,7 +219,8 @@ def get_loader(config, split):
                    image_pool=config.image_pool,
                    input_type=config.input_type,
                    output_type=config.output_type,
-                   mask_black=config.mask_black,
+                   uncalculable=config.uncalculable,
+                   mask_uncalculable=config.mask_uncalculable,
                    mask_highlight=config.mask_highlight,
                    illum_augmentation=random_color,
                    transform=tsfm)
@@ -233,7 +238,7 @@ def get_loader(config, split):
 
 if __name__ == "__main__":
     random_color = RandomColor(0.2,0.8,1,1,0.2)
-    random_crop = PairedRandomCrop(size=(256,256),scale=(0.3,1.0),ratio=(1.,1.))
+    random_crop = PairedRandomCrop(size=(512,512),scale=(0.3,1.0),ratio=(1.,1.))
     resize = Resize((256,256))
     tsfm = transforms.Compose([ToTensor(),
                                random_crop])
@@ -241,7 +246,7 @@ if __name__ == "__main__":
     data_set = LSMI(root='galaxy_512',
                       split='train',image_pool=[1,2,3],
                       input_type='uvl',output_type='uv',
-                      illum_augmentation=random_color,
+                      uncalculable=-1,illum_augmentation=random_color,
                       transform=tsfm)
 
     data_loader = data.DataLoader(data_set, batch_size=1, shuffle=False)
