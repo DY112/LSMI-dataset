@@ -523,9 +523,9 @@ def get_illumination_map(place, placeInfo):
         and save them as 2-channel numpy array (.npy)
         """
         # white balancing
-        img_1_wb = img_1 / [[[light_1[2], light_1[1], light_1[0]]]]
-        img_2_wb = img_2 / [[[light_2[2], light_2[1], light_2[0]]]]
-        img_3_wb = img_3 / [[[light_3[2], light_3[1], light_3[0]]]]
+        img_1_wb = img_1 #/ [[[light_1[2], light_1[1], light_1[0]]]]
+        img_2_wb = img_2 #/ [[[light_2[2], light_2[1], light_2[0]]]]
+        img_3_wb = img_3 #/ [[[light_3[2], light_3[1], light_3[0]]]]
 
         # generate coefficient map from G channel
         # cannot use get_coefficient_map function in 3 lights case
@@ -660,7 +660,7 @@ def get_illumination_map(place, placeInfo):
 
 if __name__ == "__main__":
     print("Generating",CAMERA,"mixture map...")
-
+    
     # open json annotation file
     with open(os.path.join(CAMERA, "meta.json"), 'r') as json_file:
         jsonData = json.load(json_file)
