@@ -104,9 +104,7 @@ In meta.json, we provides following informations.
    
    After running this code, **npy tpye mixture map** data will be generated at each scene's directory.
 
-   :warning: If you run this code with **ZERO_MASK=-1**, the full resolution mixture map may contains -1 for uncalculable pixels.
-
-   :warning: You **MUST** replace this value appropriately before resizing to prevent this negative value from interpolating with other values.
+   :warning: If you run this code with **ZERO_MASK=-1**, the full resolution mixture map may contains -1 for uncalculable pixels. You **MUST** replace this value appropriately before resizing to prevent this negative value from interpolating with other values.
 
 2. Crop for train/test U-Net (Optional)
    ```sh
