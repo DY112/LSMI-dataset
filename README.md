@@ -61,6 +61,15 @@ Folders named by each camera include several scenes, and each scene folder conta
 
 Move all three folders to the root of cloned repository.
 
+In each sub-folders, we provides metadata (meta.json), and train/val/test scene index (split.json).
+
+In meta.json, we provides following informations.
+
+- NumOfLights : Number of illuminants in the scene
+- MCCCoord : Locations of Macbeth color chart
+- Light1,2,3 : Normalized chromaticities of each illuminant (calculated through running 1_make_mixture_map.py)
+
+
 ### Preprocess the LSMI dataset
 
 0. Convert raw images to tiff files  
@@ -74,18 +83,37 @@ Move all three folders to the root of cloned repository.
 
    The converted tiff files are generated at the same location as the source file.
 
+   This process uses **DCRAW** command, with **'-h -D -4 -T'** as options.
+
+   There is no black level subtraction, saturated pixel clipping or else.
+
+   You can change the parameters as appropriate for your purpose.
+
 1. Make mixture map
    ```sh
    python 1_make_mixture_map.py
    ```
    Change the **CAMERA** variable properly to the target directory you want.
-   
-   .npy tpye mixture map data will be generated at each scene's directory.
 
-2. Crop
+   This code does the following operations for each scene:
+
+   - Subtract black level (no saturation clipping)
+   - Use Macbeth Color Chart's achromatic patches, find each illuminant's chromaticities
+   - Use green channel pixel values, calculate pixel level illuminant mixture map
+   - Mask uncalculable pixel positions (which have 0 as value for all scene pairs) to **ZERO_MASK**
+   
+   After running this code, **npy tpye mixture map** data will be generated at each scene's directory.
+
+   :warning: If you run this code with **ZERO_MASK=-1**, the full resolution mixture map may contains -1 for uncalculable pixels.
+
+   You **MUST** replace this value appropriately before resizing to prevent this negative value from interpolating with other values.
+
+2. Crop for train/test U-Net (Optional)
    ```sh
    python 2_preprocess_data.py
    ```
+
+   This preprocessing code is **written only for U-Net**, so you can skip this step and freely process the full resolution LSMI set (tiff and npy files).
 
    The image and the mixture map are resized as a square with a length of the **SIZE** variable inside the code, and the ground-truth image is also generated.
    
