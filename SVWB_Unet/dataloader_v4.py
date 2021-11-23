@@ -12,7 +12,7 @@ from torchvision.transforms import RandomResizedCrop
 class LSMI(data.Dataset):
     def __init__(self,root,split,image_pool,
                  input_type='uvl',output_type=None,uncalculable=-1,
-                 mask_uncalculable=None,mask_highlight=None,
+                 mask_uncalculable=None,mask_highlight=None,mask_black=None,
                  illum_augmentation=None,transform=None):
         self.root = root                        # dataset root
         self.split = split                      # train / val / test
@@ -22,6 +22,7 @@ class LSMI(data.Dataset):
         self.uncalculable = uncalculable        # Masked value for uncalculable mixture
         self.mask_uncalculable = mask_uncalculable  # None or Masking value for uncalculable mixture
         self.mask_highlight = mask_highlight    # None or Saturation value
+        self.mask_black = mask_black            # masking value for G=0 pixels
         self.random_color = illum_augmentation
         self.transform = transform
 
@@ -105,6 +106,8 @@ class LSMI(data.Dataset):
             mask[mixmap[:,:,0]==self.uncalculable] = self.mask_uncalculable
         if self.mask_highlight != None:
             raise NotImplementedError("Implement highlight masking!")
+        if self.mask_black != None:
+            mask[input_rgb[:,:,1:2]==0] = self.mask_black
         ret_dict["mask"] = mask
 
         # 4. apply transform
@@ -221,6 +224,7 @@ def get_loader(config, split):
                    output_type=config.output_type,
                    uncalculable=config.uncalculable,
                    mask_uncalculable=config.mask_uncalculable,
+                   mask_black=config.mask_black,
                    mask_highlight=config.mask_highlight,
                    illum_augmentation=random_color,
                    transform=tsfm)
