@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from dataloader_v3 import get_loader
+from dataloader_v4 import get_loader
 from solver import Solver
 
 def print_config(config):
@@ -58,8 +58,10 @@ if __name__ == '__main__':
     parser.add_argument('--image_pool', type=int, nargs='+', default=[1,2,3])
     parser.add_argument('--input_type', type=str, default='uvl', choices=['rgb','uvl'])
     parser.add_argument('--output_type', type=str, default='uv', choices=['illumination','uv','mixmap'])
-    parser.add_argument('--mask_black', type=str, default=None)
-    parser.add_argument('--mask_highlight', type=str, default=None)
+    parser.add_argument('--uncalculable', type=int, default=-1)
+    parser.add_argument('--mask_black', type=int, default=None)
+    parser.add_argument('--mask_highlight', type=int, default=None)
+    parser.add_argument('--mask_uncalculable', type=int, default=None)
     parser.add_argument('--num_workers', type=int, default=10)
 
     # data augmentation config
