@@ -45,8 +45,8 @@ if __name__ == '__main__':
     # training hyper-parameters
     parser.add_argument('--mode', type=str, default='train')
     parser.add_argument('--num_epochs', type=int, default=2000)
-    parser.add_argument('--batch_size', type=int, default=72)
-    parser.add_argument('--lr', type=float, default=1e-4)
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--lr', type=float, default=5e-4)
     parser.add_argument('--num_epochs_decay', type=int, default=800)
     parser.add_argument('--beta1', type=float, default=0.5)
     parser.add_argument('--beta2', type=float, default=0.999)
