@@ -396,7 +396,6 @@ def get_illumination_map(place, placeInfo):
 
         # calculate coefficient statistics
         masked_coefficient_map = coefficient_1[coefficient_1>-1]
-
         var_1 = np.var(masked_coefficient_map)
         var_2 = np.var(1-masked_coefficient_map)
         std_1 = np.std(masked_coefficient_map)
