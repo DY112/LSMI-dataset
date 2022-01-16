@@ -312,7 +312,7 @@ def get_illuminant_chroma(img, mcc_list):
             cv2.drawContours(mask, [cell], 0, (1,1,1), -1) # fill inside the contour
             maskedImage = img*mask
 
-            # sum & flip (BGR to RGB)
+            # RGB channelwise sum & flip (BGR to RGB)
             sumRGB = np.flip(np.sum(maskedImage, axis=(0,1)))
             chroma[mcc_idx, i-18, :] = sumRGB
 
