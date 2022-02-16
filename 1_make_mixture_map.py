@@ -6,6 +6,7 @@ CAMERA = "galaxy"
 RAW = CAMERA+".dng"
 VISUALIZE = False
 ZERO_MASK = -1       # masking value for unresolved pixel where G = 0 in all image pairs
+SAVE_SUBTRACTED_IMG = False
 
 RAW_EXT = os.path.splitext(RAW)[1]
 TEMPLETE = rawpy.imread(RAW)
@@ -353,6 +354,9 @@ def get_illumination_map(place, placeInfo):
         img_12_int16 = img_12.astype("int16")
         img_2 = np.clip(img_12_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
 
+        if SAVE_SUBTRACTED_IMG:
+            cv2.imwrite(src_path + place + "_2.tiff", img_2.astype("uint16"))
+
         # calculate MCC gray cellchart RGB value (shape 3,6,3)
         chroma_1 = get_illuminant_chroma(img_1_int16, mcc_list)
         chroma_2 = get_illuminant_chroma(img_2, mcc_list)
@@ -431,7 +435,7 @@ def get_illumination_map(place, placeInfo):
                                 + np.stack((coefficient_2,)*3, axis=2) * [[light_2]]
             z, y, x = np.where(coefficient_map == -1)
             for i in range(len(x)):
-                illumination_map_12[z[i], y[i], x[i]] = [1/3, 1/3, 1/3]
+                illumination_map_12[z[i], y[i], x[i]] = 1/3
             
             apply_wb_raw(raw_12, illumination_map_12)
             #tmp 
@@ -487,8 +491,13 @@ def get_illumination_map(place, placeInfo):
         img_13_int16 = img_13.astype("int16")
         img_123_int16 = img_123.astype("int16")
 
+        # pixel level image subtraction
         img_2 = np.clip(img_12_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
         img_3 = np.clip(img_13_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
+
+        if SAVE_SUBTRACTED_IMG:
+            cv2.imwrite(src_path + place + "_2.tiff", img_2.astype("uint16"))
+            cv2.imwrite(src_path + place + "_3.tiff", img_3.astype("uint16"))
 
         # calculate MCC gray cellchart RGB value (shape 3,6,3)
         chroma_1 = get_illuminant_chroma(img_1, mcc_list)
@@ -528,21 +537,36 @@ def get_illumination_map(place, placeInfo):
 
         # generate coefficient map from G channel
         # cannot use get_coefficient_map function in 3 lights case
-        denominator = img_1_wb[:,:,1] + img_2_wb[:,:,1] + img_3_wb[:,:,1]
+        denominator_13 = img_1_wb[:,:,1] + img_3_wb[:,:,1]
+        denominator_12 = img_1_wb[:,:,1] + img_2_wb[:,:,1]
+        denominator_123 = img_1_wb[:,:,1] + img_2_wb[:,:,1] + img_3_wb[:,:,1]
 
-        # compute coefficient. -1 for invalid denominator (if G value from both image = 0)
+        # compute coefficient. -1 for invalid denominator_123 (if G value from both image = 0)
         zero_mask = ZERO_MASK
-        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator, np.finfo(float).tiny, np.finfo(float).max)
-        coefficient_1 = np.where(denominator==0, ZERO_MASK, coefficient_1)
-        coefficient_2 = img_2_wb[:,:,1] / np.clip(denominator, np.finfo(float).tiny, np.finfo(float).max)
-        coefficient_2 = np.where(denominator==0, ZERO_MASK, coefficient_2)
-        coefficient_3 = img_3_wb[:,:,1] / np.clip(denominator, np.finfo(float).tiny, np.finfo(float).max)
-        coefficient_3 = np.where(denominator==0, ZERO_MASK, coefficient_3)
 
+        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_12, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_1 = np.where(denominator_12==0, ZERO_MASK, coefficient_1)
+        coefficient_2 = img_2_wb[:,:,1] / np.clip(denominator_12, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_2 = np.where(denominator_12==0, ZERO_MASK, coefficient_2)
+        coefficient_map_12 = np.stack((coefficient_1, coefficient_2), axis=-1)
+        np.save(src_path + img_12_name, coefficient_map_12)
+
+        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_13, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_1 = np.where(denominator_13==0, ZERO_MASK, coefficient_1)
+        coefficient_3 = img_3_wb[:,:,1] / np.clip(denominator_13, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_3 = np.where(denominator_13==0, ZERO_MASK, coefficient_2)
+        coefficient_map_13 = np.stack((coefficient_1, coefficient_3), axis=-1)
+        np.save(src_path + img_13_name, coefficient_map_13)
+
+        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_123, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_1 = np.where(denominator_123==0, ZERO_MASK, coefficient_1)
+        coefficient_2 = img_2_wb[:,:,1] / np.clip(denominator_123, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_2 = np.where(denominator_123==0, ZERO_MASK, coefficient_2)
+        coefficient_3 = img_3_wb[:,:,1] / np.clip(denominator_123, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_3 = np.where(denominator_123==0, ZERO_MASK, coefficient_3)
         coefficient_map = np.stack((coefficient_1, coefficient_2, coefficient_3), axis=-1)
-        # save coefficient map
         np.save(src_path + img_123_name, coefficient_map)
-
+        
         # Blue channel: light 1 / total
         # Green channel: light 2 / total
         # Red channel: light 3 / total

@@ -49,8 +49,8 @@ for key, places in split_data.items():
         for file in files:
             # if "two_illum" in key and "_12.tiff" not in file:
             #     continue
-            if "three_illum" in key and "_123.tiff" not in file:
-                continue
+            # if "three_illum" in key and ("_12.tiff" in file or "_13.tiff" in file):
+            #     continue
 
             fname = os.path.splitext(file)[0]
             illum_count = fname.split("_")[1]
