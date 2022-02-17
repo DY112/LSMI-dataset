@@ -5,8 +5,8 @@ from tqdm import tqdm
 CAMERA = "galaxy"
 RAW = CAMERA+".dng"
 VISUALIZE = False
-ZERO_MASK = -1       # masking value for unresolved pixel where G = 0 in all image pairs
-SAVE_SUBTRACTED_IMG = False
+ZERO_MASK = -1              # masking value for unresolved pixel where G = 0 in all image pairs
+SAVE_SUBTRACTED_IMG = False # option for saving subtracted image (ex. _2, _3)
 
 RAW_EXT = os.path.splitext(RAW)[1]
 TEMPLETE = rawpy.imread(RAW)
