@@ -494,10 +494,12 @@ def get_illumination_map(place, placeInfo):
         # pixel level image subtraction
         img_2 = np.clip(img_12_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
         img_3 = np.clip(img_13_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
+        img_23 = np.clip(img_123_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
 
         if SAVE_SUBTRACTED_IMG:
             cv2.imwrite(src_path + place + "_2.tiff", img_2.astype("uint16"))
             cv2.imwrite(src_path + place + "_3.tiff", img_3.astype("uint16"))
+            cv2.imwrite(src_path + place + "_23.tiff", img_23.astype("uint16"))
 
         # calculate MCC gray cellchart RGB value (shape 3,6,3)
         chroma_1 = get_illuminant_chroma(img_1, mcc_list)
