@@ -3,11 +3,13 @@
 <img width="600" alt="스크린샷 2021-08-21 오후 3 30 22" src="https://user-images.githubusercontent.com/24367643/130312876-5b2955c2-0176-4e87-ba90-7c466fa3961b.png">
 
 <!-- ABOUT THE PROJECT -->
-## Dataset License
+## Change Log
 
-**LSMI Dataset Version : 1.0 (Aug 05, 2021)**
+**LSMI Dataset Version : 1.1**
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+1.0 : LSMI dataset released. (Aug 05, 2021)
+
+1.1 : Add option for saving sub-pair images for 3-illuminant scene (ex. _1,_12,_13) &amp; saving subtracted image (ex. _2,_3,_23) (Feb 20, 2022)
 
 ## About
 [[Paper]](https://dykim.me/publication/lsmi/LSMI.pdf)
@@ -145,6 +147,10 @@ Locate downloaded **models** folder into **SVWB_Unet**.
   cd SVWB_Unet
   sh train.sh
   ```
+
+## Dataset License
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
 
 <!-- 
