@@ -58,7 +58,7 @@ git clone https://github.com/DY112/LSMI-dataset.git
 ```
 
 ### Download the LSMI dataset
-You should first download the LSMI dataset from [here](https://drive.google.com/drive/).
+You should first download the LSMI dataset from [here](https://drive.google.com/drive/folders/1m0Jt6vTkRJi_iMDDnhcW79QmE48MGVUP).
 
 The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
 
