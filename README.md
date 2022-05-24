@@ -14,7 +14,7 @@
 ## About
 [[Paper]](https://dykim.me/publication/lsmi/LSMI.pdf)
 [[Project site]](https://dykim.me/publication/lsmi/) 
-[[Download Dataset]](https://drive.google.com/drive/folders/1m0Jt6vTkRJi_iMDDnhcW79QmE48MGVUP?usp=sharing)
+[[Download Dataset]](https://forms.gle/EjBAUzrrsWBxGX4o7)
 [[Video]](https://youtu.be/i8OAdYryig0)
 
 This is an official repository of **"Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm under Mixed Illumination"**, which is accepted as a poster in ICCV 2021.
@@ -58,7 +58,7 @@ git clone https://github.com/DY112/LSMI-dataset.git
 ```
 
 ### Download the LSMI dataset
-You should first download the LSMI dataset from [here](https://drive.google.com/drive/folders/1m0Jt6vTkRJi_iMDDnhcW79QmE48MGVUP).
+You should first download the LSMI dataset from [here](https://forms.gle/EjBAUzrrsWBxGX4o7).
 
 The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
 
@@ -130,7 +130,7 @@ In meta.json, we provides following informations.
 
 ### Use U-Net for pixel-level AWB
 
-You can download pre-trained model parameter [here](https://drive.google.com/drive/folders/1m0Jt6vTkRJi_iMDDnhcW79QmE48MGVUP?usp=sharing).
+You can download pre-trained model parameter [here](https://forms.gle/EjBAUzrrsWBxGX4o7).
 
 Pre-trained model is trained on 512x512 data with random crop & random pixel level relighting augmentation method.
 
