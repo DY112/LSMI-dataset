@@ -556,7 +556,7 @@ def get_illumination_map(place, placeInfo):
         coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_13, np.finfo(float).tiny, np.finfo(float).max)
         coefficient_1 = np.where(denominator_13==0, ZERO_MASK, coefficient_1)
         coefficient_3 = img_3_wb[:,:,1] / np.clip(denominator_13, np.finfo(float).tiny, np.finfo(float).max)
-        coefficient_3 = np.where(denominator_13==0, ZERO_MASK, coefficient_2)
+        coefficient_3 = np.where(denominator_13==0, ZERO_MASK, coefficient_3)
         coefficient_map_13 = np.stack((coefficient_1, coefficient_3), axis=-1)
         np.save(src_path + img_13_name, coefficient_map_13)
 
