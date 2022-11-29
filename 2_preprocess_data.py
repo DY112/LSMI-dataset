@@ -12,8 +12,8 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SQUARE_CROP = True      # Trim left/right sides of the image so that it is square.
-SIZE = 512              # Size of train/val image. If None, keep the original resolution.
+SQUARE_CROP = False      # Trim left/right sides of the image so that it is square.
+SIZE = 256              # Size of train/val image. If None, keep the original resolution.
 TEST_SIZE = 256         # Size of test image. If None, keep the original resolution.
 CAMERA = "galaxy"       # LSMI subset camera
 if SIZE != None:
@@ -61,7 +61,7 @@ for key, places in split_data.items():
             
             # make pixel-level illumination map
             if len(illum_count) == 1:
-                mixmap = np.ones_like(img[:,:,0:1],dtype=np.float)
+                mixmap = np.ones_like(img[:,:,0:1],dtype=float)
             else:
                 mixmap = np.load(os.path.join(CAMERA,place,fname+".npy"))
             illum_chroma = [[0,0,0],[0,0,0],[0,0,0]]
@@ -77,12 +77,12 @@ for key, places in split_data.items():
             # apply MCC mask to original image, GT image (training set)
             if split == "train":
                 mask = np.ones_like(img[:,:,0:1], dtype='float32')
-                mcc1 = (np.float32(meta_data[place]["MCCCoord"]["mcc1"]) / 2).astype(np.int)
-                mcc2 = (np.float32(meta_data[place]["MCCCoord"]["mcc2"]) / 2).astype(np.int)
-                mcc3 = (np.float32(meta_data[place]["MCCCoord"]["mcc3"]) / 2).astype(np.int)
+                mcc1 = (np.float32(meta_data[place]["MCCCoord"]["mcc1"]) / 2).astype(int)
+                mcc2 = (np.float32(meta_data[place]["MCCCoord"]["mcc2"]) / 2).astype(int)
+                mcc3 = (np.float32(meta_data[place]["MCCCoord"]["mcc3"]) / 2).astype(int)
                 mcc_list = [mcc1.tolist(),mcc2.tolist(),mcc3.tolist()]
                 for mcc in mcc_list:
-                    contour = np.array([[mcc[0]],[mcc[1]],[mcc[2]],[mcc[3]]]).astype(np.int)
+                    contour = np.array([[mcc[0]],[mcc[1]],[mcc[2]],[mcc[3]]]).astype(int)
                     cv2.drawContours(mask, [contour], 0, (0), -1)
                 img = img * mask
                 img_wb = img_wb * mask
