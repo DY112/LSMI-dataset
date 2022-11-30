@@ -275,7 +275,7 @@ def get_coefficient_map(img_1_wb, img_2_wb, zero_mask=-1):
     denominator = img_1_wb[:,:,1] + img_2_wb[:,:,1]
 
     # compute coefficient. fill zero_mask value for invalid denominator (if G value from both image = 0)
-    coefficient = img_1_wb[:,:,1] / np.clip(denominator, np.finfo(float).tiny, np.finfo(float).max)
+    coefficient = img_1_wb[:,:,1] / np.clip(denominator, 0.0001, SATURATION)
     coefficient = np.where(denominator==0, zero_mask, coefficient)
 
     return coefficient
@@ -288,7 +288,7 @@ def get_illuminant_chroma(img, mcc_list):
     returns     : numpy array with shape (3,6,3)
                   (MCC chart, patch, RGB channel sum)
     """
-    chroma = np.zeros((3,6,3), dtype=np.int)
+    chroma = np.zeros((3,6,3), dtype=int)
 
     for mcc_idx in range(len(mcc_list)):
         mcc = mcc_list[mcc_idx]
@@ -309,7 +309,7 @@ def get_illuminant_chroma(img, mcc_list):
         # generate mask for gray patches (18~23) & record chromaticity
         for i in range(18,24):
             mask = np.zeros_like(img)
-            cell = np.array([[cellchart[i,0]], [cellchart[i,1]], [cellchart[i,2]], [cellchart[i,3]]]).astype(np.int)
+            cell = np.array([[cellchart[i,0]], [cellchart[i,1]], [cellchart[i,2]], [cellchart[i,3]]]).astype(int)
             cv2.drawContours(mask, [cell], 0, (1,1,1), -1) # fill inside the contour
             maskedImage = img*mask
 
@@ -341,8 +341,6 @@ def get_illumination_map(place, placeInfo):
 
     # make illumination map of 2 images (1,12)
     if placeInfo["NumOfLights"] == 2:
-        #light_1 = placeInfo["Light1"]
-        #light_2 = placeInfo["Light2"]
         singleimage = place + "_1"
         multiimage = place + "_12"
 
@@ -378,20 +376,12 @@ def get_illumination_map(place, placeInfo):
         ratio = (diff / before) * 100.
         placeInfo["BrightnessDiff"] = ratio
 
-
         """
         From here, calculate each pixel's light combination coefficient map
         and save them as numpy array (.npy)
         """
-        
-        # white balancing & generate coefficient (mixture) map
-        # in our apporoach, this WB process is redundant since G is normalized to 1 in illuminant chromaticity
-        # MIMO normalized chromaticity vector to sum=1 and did WB process
-        img_1_wb = img_1 # / [[[light_1[2], light_1[1], light_1[0]]]]
-        img_2_wb = img_2 # / [[[light_2[2], light_2[1], light_2[0]]]]
-
-        # generate coefficient map from G channel
-        coefficient_1 = get_coefficient_map(img_1_wb, img_2_wb, ZERO_MASK)
+        # generate coefficient (mixture) map from G channel
+        coefficient_1 = get_coefficient_map(img_1, img_2, ZERO_MASK)
         coefficient_2 = np.where(coefficient_1==ZERO_MASK,ZERO_MASK,1.0 - coefficient_1)
 
         # save coefficient map
@@ -438,10 +428,6 @@ def get_illumination_map(place, placeInfo):
                 illumination_map_12[z[i], y[i], x[i]] = 1/3
             
             apply_wb_raw(raw_12, illumination_map_12)
-            #tmp 
-            #tmp # apply white balance & decode raw file to 3 channel image
-            #tmp img1_wb1 = raw_1.postprocess(user_wb=[light_1[1]/light_1[0], 1.0, light_1[1]/light_1[2], 1.0], no_auto_bright=True, half_size=True)
-            #tmp img2_wb2 = raw_2.postprocess(user_wb=[light_2[1]/light_2[0], 1.0, light_2[1]/light_2[2], 1.0], no_auto_bright=True, half_size=True)
             img12_wb12 = raw_12.postprocess(user_black=BLACK_LEVEL, user_wb=[1,1,1,1], no_auto_bright=True, half_size=True)
 
             raw_12 = rawpy.imread(src_path + multiimage + RAW_EXT)
@@ -453,28 +439,14 @@ def get_illumination_map(place, placeInfo):
             cv2.imwrite(os.path.join(vis_path, place+"_daylight.png"), cv2.cvtColor(rgb_12_daylight, cv2.COLOR_RGB2BGR))
             cv2.imwrite(os.path.join(vis_path, place+"_camera.png"), cv2.cvtColor(rgb_12_camera, cv2.COLOR_RGB2BGR))
             cv2.imwrite(os.path.join(vis_path, place+"_wb12.png"), cv2.cvtColor(img12_wb12, cv2.COLOR_RGB2BGR))
-            #tmp img12_wb1 = raw_12.postprocess(user_wb=[light_1[1]/light_1[0], 1.0, light_1[1]/light_1[2], 1.0], no_auto_bright=True, half_size=True)
-            #tmp img12_wb2 = raw_12.postprocess(user_wb=[light_2[1]/light_2[0], 1.0, light_2[1]/light_2[2], 1.0], no_auto_bright=True, half_size=True)
-
-            # original jpg image
-            #tmp img1 = cv2.imread(src_path + singleimage + ".jpg")
-            #tmp img12 = cv2.imread(src_path + multiimage + ".jpg")
 
             # rb-map image
             rb_map = get_rb_map(coefficient_1)
             cv2.imwrite(os.path.join(vis_path, place+"_rbmap.jpg"), cv2.cvtColor(rb_map, cv2.COLOR_RGB2BGR))
 
-            # 8-grid image visualization & save image
-            #tmp grid_visualize_BGR = make_grid(img1, img1_wb1, img12, img12_wb12, img12_wb1, img12_wb2, img2_wb2, rb_map)
-            #tmp cv2.imwrite(os.path.join(vis_path, place+".jpg"), grid_visualize_BGR)
 
     # make illumination map (1,12,13,123 pair)
     elif placeInfo["NumOfLights"] == 3:
-        """
-        Not same with 2 light case
-        I commented at difference part!
-        """
-
         img_1_name = place + "_1"
         img_12_name = place + "_12"
         img_13_name = place + "_13"
@@ -521,62 +493,38 @@ def get_illumination_map(place, placeInfo):
         placeInfo["AD23"] = angular_distance(placeInfo["Light2"], placeInfo["Light3"])
         placeInfo["AD31"] = angular_distance(placeInfo["Light3"], placeInfo["Light1"])
 
-        # calculate brightness (sum of G pixels) difference of light2-affected MCC
-        # need to be updated for 3 lights
-        # before = np.sum(chroma_1[maxChart2, maxPatch2, 1])
-        # after = np.sum(chroma_2[maxChart2, maxPatch2, 1])
-        # ratio = (after - before) / before * 100.
-        # placeInfo["BrightnessDiff"] = ratio
-
         """
         From here, calculate each pixel's light combination coefficient map
         and save them as 2-channel numpy array (.npy)
         """
-        # white balancing
-        img_1_wb = img_1 #/ [[[light_1[2], light_1[1], light_1[0]]]]
-        img_2_wb = img_2 #/ [[[light_2[2], light_2[1], light_2[0]]]]
-        img_3_wb = img_3 #/ [[[light_3[2], light_3[1], light_3[0]]]]
-
         # generate coefficient map from G channel
         # cannot use get_coefficient_map function in 3 lights case
-        denominator_13 = img_1_wb[:,:,1] + img_3_wb[:,:,1]
-        denominator_12 = img_1_wb[:,:,1] + img_2_wb[:,:,1]
-        denominator_123 = img_1_wb[:,:,1] + img_2_wb[:,:,1] + img_3_wb[:,:,1]
+        denominator_13 = img_1[:,:,1] + img_3[:,:,1]
+        denominator_12 = img_1[:,:,1] + img_2[:,:,1]
+        denominator_123 = img_1[:,:,1] + img_2[:,:,1] + img_3[:,:,1]
 
         # compute coefficient. -1 for invalid denominator_123 (if G value from both image = 0)
-        zero_mask = ZERO_MASK
-
-        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_12, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_1 = img_1[:,:,1] / np.clip(denominator_12, 0.0001, SATURATION)
         coefficient_1 = np.where(denominator_12==0, ZERO_MASK, coefficient_1)
-        coefficient_2 = img_2_wb[:,:,1] / np.clip(denominator_12, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_2 = img_2[:,:,1] / np.clip(denominator_12, 0.0001, SATURATION)
         coefficient_2 = np.where(denominator_12==0, ZERO_MASK, coefficient_2)
         coefficient_map_12 = np.stack((coefficient_1, coefficient_2), axis=-1)
         np.save(src_path + img_12_name, coefficient_map_12)
 
-        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_13, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_1 = img_1[:,:,1] / np.clip(denominator_13, 0.0001, SATURATION)
         coefficient_1 = np.where(denominator_13==0, ZERO_MASK, coefficient_1)
-        coefficient_3 = img_3_wb[:,:,1] / np.clip(denominator_13, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_3 = img_3[:,:,1] / np.clip(denominator_13, 0.0001, SATURATION)
         coefficient_3 = np.where(denominator_13==0, ZERO_MASK, coefficient_3)
         coefficient_map_13 = np.stack((coefficient_1, coefficient_3), axis=-1)
         np.save(src_path + img_13_name, coefficient_map_13)
 
-        coefficient_1 = img_1_wb[:,:,1] / np.clip(denominator_123, np.finfo(float).tiny, np.finfo(float).max)
-        coefficient_1 = np.where(denominator_123==0, ZERO_MASK, coefficient_1)
-        coefficient_2 = img_2_wb[:,:,1] / np.clip(denominator_123, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_2 = img_2[:,:,1] / np.clip(denominator_123, 0.0001, SATURATION)
         coefficient_2 = np.where(denominator_123==0, ZERO_MASK, coefficient_2)
-        coefficient_3 = img_3_wb[:,:,1] / np.clip(denominator_123, np.finfo(float).tiny, np.finfo(float).max)
+        coefficient_3 = img_3[:,:,1] / np.clip(denominator_123, 0.0001, SATURATION)
         coefficient_3 = np.where(denominator_123==0, ZERO_MASK, coefficient_3)
+        coefficient_1 = np.where(denominator_123==0, ZERO_MASK, 1 - coefficient_2 - coefficient_3)
         coefficient_map = np.stack((coefficient_1, coefficient_2, coefficient_3), axis=-1)
         np.save(src_path + img_123_name, coefficient_map)
-        
-        # Blue channel: light 1 / total
-        # Green channel: light 2 / total
-        # Red channel: light 3 / total
-        # coefficient_map = cv2.merge((coefficient_1, coefficient_2, coefficient_3))
-
-        # save coefficient map
-        # unlike 2 light, not save all case of coefficient map
-        # cv2.imwrite(dst_path + 'coefficient.png', coefficient_map)
 
         # save coefficient statistics
         masked_coefficient_1 = coefficient_1[coefficient_1>-1]
@@ -602,10 +550,6 @@ def get_illumination_map(place, placeInfo):
         ##########################################################################
         """
         if VISUALIZE:
-            """
-            Not completed!
-            Currently, it save only IMG123_WB123 & light ratio for all pixel by PNG
-            """
             # open two raw images (1,12, 13, 123)
             raw_1 = rawpy.imread(src_path + img_1_name + RAW_EXT)
             raw_12 = rawpy.imread(src_path + img_12_name + RAW_EXT)
@@ -654,19 +598,8 @@ def get_illumination_map(place, placeInfo):
             img123_wb123 = raw_123.postprocess(user_black=BLACK_LEVEL, user_wb=[1,1,1,1], no_auto_bright=True, half_size=True)
             img123_wb123 = cv2.cvtColor(img123_wb123, cv2.COLOR_RGB2BGR)
             cv2.imwrite(os.path.join(vis_path, place+"_IMG123_WB123.jpg"), img123_wb123)
-            
-            # raw_123 = rawpy.imread(src_path + img_123_name + ".dng")
-
-            # raw_12 = rawpy.imread(src_path + multiimage + ".dng")
-            # img12_wb1 = raw_12.postprocess(user_wb=[light_1[1]/light_1[0], 1.0, light_1[1]/light_1[2], 1.0], no_auto_bright=True, half_size=True)
-            # img12_wb2 = raw_12.postprocess(user_wb=[light_2[1]/light_2[0], 1.0, light_2[1]/light_2[2], 1.0], no_auto_bright=True, half_size=True)
-
-            # original jpg image
-            # img1 = cv2.imread(src_path + singleimage + ".jpg")
-            # img12 = cv2.imread(src_path + multiimage + ".jpg")
 
             # rb-map image
-            # cannot use get_rb_map function in 3 lights case because of difference of channel #
             rgb_map = np.zeros_like(coefficient_map, dtype=np.uint8)
             rgb_map[:,:,0] = coefficient_map[:,:,0] * 255
             rgb_map[:,:,1] = coefficient_map[:,:,1] * 255
@@ -675,10 +608,6 @@ def get_illumination_map(place, placeInfo):
 
             # calculate coefficient variance
             placeInfo["CoeffVariance"] = np.mean(np.var(coefficient_map, axis=(0,1)))
-
-            # 8-grid image visualization & save image
-            # grid_visualize_BGR = make_grid(img1, img1_wb1, img12, img12_wb12, img12_wb1, img12_wb2, img2_wb2, rb_map)
-            # cv2.imwrite(os.path.join(vis_path, place+".jpg"), grid_visualize_BGR)
 
     # return Json data contains Light_RGB
     return placeInfo
