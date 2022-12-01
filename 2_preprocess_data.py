@@ -12,8 +12,8 @@ import numpy as np
 from tqdm import tqdm
 from utils import *
 
-SQUARE_CROP = False      # Trim left/right sides of the image so that it is square.
-SIZE = 256              # Size of train/val image. If None, keep the original resolution.
+SQUARE_CROP = True      # Trim left/right sides of the image so that it is square. (for train/val only, Always True for test)
+SIZE = 512              # Size of train/val image. If None, keep the original resolution.
 TEST_SIZE = 256         # Size of test image. If None, keep the original resolution.
 CAMERA = "galaxy"       # LSMI subset camera
 if SIZE != None:
@@ -88,7 +88,7 @@ for key, places in split_data.items():
                 img_wb = img_wb * mask
 
             # Crop original image, GT image, mixmap
-            if SQUARE_CROP:
+            if SQUARE_CROP or split == "test":
                 height, width, _ = img.shape
                 w_start = int(width/2) - int(height/2)
                 w_end = w_start + height
