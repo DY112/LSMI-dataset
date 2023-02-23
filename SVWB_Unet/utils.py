@@ -32,19 +32,37 @@ def rgb2uvl(img_rgb):
 
     return img_uvl
 
+# def plot_illum(pred_map=None,gt_map=None,MAE_illum=None,MAE_rgb=None,PSNR=None):
+#     """
+#     plot illumination map into R,G 2-D space
+#     """
+
+#     fig = plt.figure()
+#     if pred_map is not None:
+#         plt.plot(pred_map[:,0],pred_map[:,1],'ro')
+#     if gt_map is not None:
+#         plt.plot(gt_map[:,0],gt_map[:,1],'bx')
+#     plt.xlim(0,3)
+#     plt.ylim(0,3)
+#     plt.title(f'MAE_illum:{MAE_illum:.4f} / PSNR:{PSNR:.4f}')
+#     plt.close()
+
+#     fig.canvas.draw()
+
+#     return np.array(fig.canvas.renderer._renderer)
+
 def plot_illum(pred_map=None,gt_map=None,MAE_illum=None,MAE_rgb=None,PSNR=None):
     """
-    plot illumination map into R,G 2-D space
+    plot illumination map into R,B 2-D space
     """
-
     fig = plt.figure()
     if pred_map is not None:
-        plt.plot(pred_map[:,0],pred_map[:,1],'ro')
+        plt.plot(pred_map[:,0],pred_map[:,1],'ro',alpha=0.03,markersize=5)
     if gt_map is not None:
-        plt.plot(gt_map[:,0],gt_map[:,1],'bx')
+        plt.plot(gt_map[:,0],gt_map[:,1],'bo',alpha=0.01,markersize=3)
     plt.xlim(0,3)
     plt.ylim(0,3)
-    plt.title(f'MAE_illum:{MAE_illum:.4f} / PSNR:{PSNR:.4f}')
+    plt.title(f'MAE_illum:{MAE_illum:.4f} / PSNR:{PSNR}')
     plt.close()
 
     fig.canvas.draw()

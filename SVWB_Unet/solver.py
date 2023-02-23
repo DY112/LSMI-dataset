@@ -7,6 +7,7 @@ from model import U_Net
 from utils import *
 from metrics import *
 from torch.utils.tensorboard import SummaryWriter
+from torchvision.utils import save_image
 
 class Solver():
     def __init__(self, config, train_loader, valid_loader, test_loader):
@@ -233,6 +234,7 @@ class Solver():
                     pred_illum = input_rgb / (pred_rgb + 1e-8)
                 ones = torch.ones_like(gt_illum[:,:1,:,:])
                 gt_illum = torch.cat([gt_illum[:,:1,:,:],ones,gt_illum[:,1:,:,:]],dim=1)
+                pred_rgb = torch.clamp(pred_rgb,0,self.white_level)
 
                 # error metrics
                 MAE_illum = get_MAE(pred_illum,gt_illum,tensor_type="illumination",mask=batch["mask"])
@@ -336,6 +338,9 @@ class Solver():
                 pred_illum = input_rgb / (pred_rgb + 1e-8)
             ones = torch.ones_like(gt_illum[:,:1,:,:])
             gt_illum = torch.cat([gt_illum[:,:1,:,:],ones,gt_illum[:,1:,:,:]],dim=1)
+            pred_rgb = torch.clamp(pred_rgb,0,self.white_level)
+
+            # input(pred_illum.shape)
 
             # error metrics
             MAE_illum = get_MAE(pred_illum,gt_illum,tensor_type="illumination",mask=batch["mask"])
@@ -362,11 +367,20 @@ class Solver():
                                  MAE_illum=MAE_illum,MAE_rgb=MAE_rgb,PSNR=PSNR)
                 srgb_visualized = visualize(batch['input_rgb'][0],pred_rgb[0],batch['gt_rgb'][0],self.camera,concat=True)
 
-                cv2.imwrite(os.path.join(self.result_path,batch["place"][0]+'_'+batch["illum_count"][0]+'_plot.png'),plot_fig)
-                cv2.imwrite(os.path.join(self.result_path,batch["place"][0]+'_'+batch["illum_count"][0]+'_vis.png'),cv2.cvtColor(srgb_visualized,cv2.COLOR_RGB2BGR))
+                fname_base = batch["place"][0]+'_'+batch["illum_count"][0]
 
-        print("loss :", np.mean(test_loss), np.median(test_loss), np.max(test_loss))
-        print("pred_loss :", np.mean(test_pred_loss), np.median(test_pred_loss), np.max(test_pred_loss))
-        print("MAE_illum :", np.mean(test_MAE_illum), np.median(test_MAE_illum), np.max(test_MAE_illum))
-        print("MAE_rgb :", np.mean(test_MAE_rgb), np.median(test_MAE_rgb), np.max(test_MAE_rgb))
-        print("PSNR :", np.mean(test_PSNR), np.median(test_PSNR), np.max(test_PSNR))
+                cv2.imwrite(os.path.join(self.result_path,fname_base+'_plot.png'),plot_fig)
+                cv2.imwrite(os.path.join(self.result_path,fname_base+'_vis.png'),cv2.cvtColor(srgb_visualized,cv2.COLOR_RGB2BGR))
+                pred_illum_scale = pred_illum
+                pred_illum_scale[:,1] *= 0.6
+                save_image(fp=os.path.join(self.result_path,fname_base+'_illum.png'),tensor=pred_illum_scale[0].cpu().detach())
+
+                pred_rgb_normalized = (pred_rgb[0] / self.white_level).cpu().detach()
+                gamma_pred_rgb = torch.pow(pred_rgb_normalized,1/1.5)
+                save_image(fp=os.path.join(self.result_path,fname_base+'_raw.png'),tensor=gamma_pred_rgb)
+
+        print("loss :", np.nanmean(test_loss), np.median(test_loss), np.max(test_loss))
+        print("pred_loss :", np.nanmean(test_pred_loss), np.median(test_pred_loss), np.max(test_pred_loss))
+        print("MAE_illum :", np.nanmean(test_MAE_illum), np.median(test_MAE_illum), np.max(test_MAE_illum))
+        print("MAE_rgb :", np.nanmean(test_MAE_rgb), np.median(test_MAE_rgb), np.max(test_MAE_rgb))
+        print("PSNR :", np.nanmean(test_PSNR), np.median(test_PSNR), np.max(test_PSNR))
