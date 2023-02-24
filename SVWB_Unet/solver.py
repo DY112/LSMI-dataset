@@ -363,14 +363,15 @@ class Solver():
 
             if self.save_result == 'yes':
                 # plot illumination map to R,B space
-                plot_fig = plot_illum(pred_map=illum_map_rb.permute(0,2,3,1).reshape((-1,2)).cpu().detach().numpy(),
+                plot_fig,plot_fig_rev = plot_illum(pred_map=illum_map_rb.permute(0,2,3,1).reshape((-1,2)).cpu().detach().numpy(),
                                  gt_map=gt_illum[:,[0,2],:,:].permute(0,2,3,1).reshape((-1,2)).cpu().detach().numpy(),
                                  MAE_illum=MAE_illum,MAE_rgb=MAE_rgb,PSNR=PSNR)
                 input_srgb, output_srgb, gt_srgb = visualize(batch['input_rgb'][0],pred_rgb[0],batch['gt_rgb'][0],self.camera,concat=False)
 
                 fname_base = batch["place"][0]+'_'+batch["illum_count"][0]
 
-                cv2.imwrite(os.path.join(self.result_path,fname_base+'_plot.png'),plot_fig)
+                Image.fromarray(plot_fig).save(os.path.join(self.result_path,fname_base+'_illum_map.png'))
+                Image.fromarray(plot_fig_rev).save(os.path.join(self.result_path,fname_base+'_illum_map_rev.png'))
                 Image.fromarray(input_srgb).save(os.path.join(self.result_path,fname_base+'_input_srgb.png'))
                 Image.fromarray(output_srgb).save(os.path.join(self.result_path,fname_base+'_output_srgb.png'))
                 Image.fromarray(gt_srgb).save(os.path.join(self.result_path,fname_base+'_gt_srgb.png'))

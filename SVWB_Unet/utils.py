@@ -55,11 +55,13 @@ def plot_illum(pred_map=None,gt_map=None,MAE_illum=None,MAE_rgb=None,PSNR=None):
     """
     plot illumination map into R,B 2-D space
     """
+
+    # plot pred first, then gt
     fig = plt.figure()
     if pred_map is not None:
-        plt.plot(pred_map[:,0],pred_map[:,1],'ro',alpha=0.03,markersize=5)
+        plt.plot(pred_map[:,0],pred_map[:,1],'bo',alpha=0.03,markersize=5)
     if gt_map is not None:
-        plt.plot(gt_map[:,0],gt_map[:,1],'bo',alpha=0.01,markersize=3)
+        plt.plot(gt_map[:,0],gt_map[:,1],'ro',alpha=0.01,markersize=3)
     minx,miny = min(gt_map[:,0]),min(gt_map[:,1])
     maxx,maxy = max(gt_map[:,0]),max(gt_map[:,1])
     lenx = (maxx-minx)/2
@@ -78,8 +80,35 @@ def plot_illum(pred_map=None,gt_map=None,MAE_illum=None,MAE_rgb=None,PSNR=None):
     plt.close()
 
     fig.canvas.draw()
+    plot_illum = np.array(fig.canvas.renderer._renderer)
 
-    return np.array(fig.canvas.renderer._renderer)
+    # plot gt first, then pred
+    fig = plt.figure()
+    if gt_map is not None:
+        plt.plot(gt_map[:,0],gt_map[:,1],'ro',alpha=0.01,markersize=3)
+    if pred_map is not None:
+        plt.plot(pred_map[:,0],pred_map[:,1],'bo',alpha=0.03,markersize=5)
+    minx,miny = min(gt_map[:,0]),min(gt_map[:,1])
+    maxx,maxy = max(gt_map[:,0]),max(gt_map[:,1])
+    lenx = (maxx-minx)/2
+    leny = (maxy-miny)/2
+    add_len = max(lenx,leny) + 0.3
+
+    center_x = (maxx+minx)/2
+    center_y = (maxy+miny)/2
+
+    plt.xlim(center_x-add_len,center_x+add_len)
+    plt.ylim(center_y-add_len,center_y+add_len)
+
+    # make square
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.title(f'MAE_illum:{MAE_illum:.4f} / PSNR:{PSNR}')
+    plt.close()
+
+    fig.canvas.draw()
+    plot_illum_rev = np.array(fig.canvas.renderer._renderer)
+
+    return plot_illum, plot_illum_rev
 
 def mix_chroma(mixmap,chroma_list,illum_count):
     """
