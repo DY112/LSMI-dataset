@@ -31,8 +31,22 @@ def plot_illum(pred_map=None,gt_map=None):
         plt.plot(pred_map[:,0],pred_map[:,1],'ro')
     if gt_map is not None:
         plt.plot(gt_map[:,0],gt_map[:,1],'bx')
-    plt.xlim(0,3)
-    plt.ylim(0,3)
+
+    minx,miny = min(gt_map[:,0]),min(gt_map[:,1])
+    maxx,maxy = max(gt_map[:,0]),max(gt_map[:,1])
+    lenx = (maxx-minx)/2
+    leny = (maxy-miny)/2
+    add_len = max(lenx,leny) + 0.3
+
+    center_x = (maxx+minx)/2
+    center_y = (maxy+miny)/2
+
+    plt.xlim(center_x-add_len,center_x+add_len)
+    plt.ylim(center_y-add_len,center_y+add_len)
+
+    # make square
+    plt.gca().set_aspect('equal', adjustable='box')
+
     plt.close()
 
     fig.canvas.draw()
