@@ -8,6 +8,7 @@ from utils import *
 from metrics import *
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import save_image
+from PIL import Image
 
 class Solver():
     def __init__(self, config, train_loader, valid_loader, test_loader):
@@ -365,12 +366,14 @@ class Solver():
                 plot_fig = plot_illum(pred_map=illum_map_rb.permute(0,2,3,1).reshape((-1,2)).cpu().detach().numpy(),
                                  gt_map=gt_illum[:,[0,2],:,:].permute(0,2,3,1).reshape((-1,2)).cpu().detach().numpy(),
                                  MAE_illum=MAE_illum,MAE_rgb=MAE_rgb,PSNR=PSNR)
-                srgb_visualized = visualize(batch['input_rgb'][0],pred_rgb[0],batch['gt_rgb'][0],self.camera,concat=True)
+                input_srgb, output_srgb, gt_srgb = visualize(batch['input_rgb'][0],pred_rgb[0],batch['gt_rgb'][0],self.camera,concat=False)
 
                 fname_base = batch["place"][0]+'_'+batch["illum_count"][0]
 
                 cv2.imwrite(os.path.join(self.result_path,fname_base+'_plot.png'),plot_fig)
-                cv2.imwrite(os.path.join(self.result_path,fname_base+'_vis.png'),cv2.cvtColor(srgb_visualized,cv2.COLOR_RGB2BGR))
+                Image.fromarray(input_srgb).save(os.path.join(self.result_path,fname_base+'_input_srgb.png'))
+                Image.fromarray(output_srgb).save(os.path.join(self.result_path,fname_base+'_output_srgb.png'))
+                Image.fromarray(gt_srgb).save(os.path.join(self.result_path,fname_base+'_gt_srgb.png'))
                 pred_illum_scale = pred_illum
                 pred_illum_scale[:,1] *= 0.6
                 save_image(fp=os.path.join(self.result_path,fname_base+'_illum.png'),tensor=pred_illum_scale[0].cpu().detach())
