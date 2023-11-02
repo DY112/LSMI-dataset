@@ -26,9 +26,10 @@ RAW = CAMERA+".dng"
 TEMPLETE = rawpy.imread(RAW)
 if CAMERA == "sony":
     BLACK_LEVEL = 128
+    SATURATION = 4095
 else:
     BLACK_LEVEL = min(TEMPLETE.black_level_per_channel)
-SATURATION = TEMPLETE.white_level
+    SATURATION = TEMPLETE.white_level
 
 
 with open(os.path.join(CAMERA,"meta.json"), 'r') as meta_json:
@@ -57,7 +58,7 @@ for key, places in split_data.items():
 
             # open tiff image & subtract black level
             img = cv2.cvtColor(cv2.imread(os.path.join(CAMERA,place,file), cv2.IMREAD_UNCHANGED),cv2.COLOR_BGR2RGB).astype('float32')
-            img = np.clip(img - BLACK_LEVEL, 0, SATURATION)
+            img = np.clip(img - BLACK_LEVEL, 0, SATURATION - BLACK_LEVEL)
             
             # make pixel-level illumination map
             if len(illum_count) == 1:
@@ -73,6 +74,7 @@ for key, places in split_data.items():
 
             # white balance original image
             img_wb = img / illum_map
+            img_wb = np.clip(img_wb, 0, SATURATION - BLACK_LEVEL)
 
             # apply MCC mask to original image, GT image (training set)
             if split == "train":

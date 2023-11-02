@@ -13,10 +13,11 @@ TEMPLETE = rawpy.imread(RAW)
 if CAMERA == 'sony':
     BLACK_LEVEL = 128
     BLACK_LEVEL_RAW = 512
+    SATURATION = 4095
 else:
     BLACK_LEVEL = min(TEMPLETE.black_level_per_channel)
     BLACK_LEVEL_RAW = BLACK_LEVEL
-SATURATION = TEMPLETE.white_level
+    SATURATION = TEMPLETE.white_level
 RAW_PATTERN = TEMPLETE.raw_pattern.astype('int8')
 
 """
@@ -317,7 +318,7 @@ def get_illuminant_chroma(img, mcc_list):
             sumRGB = np.flip(np.sum(maskedImage, axis=(0,1)))
             chroma[mcc_idx, i-18, :] = sumRGB
 
-            if True in (maskedImage >= SATURATION):
+            if True in (maskedImage >= (SATURATION - BLACK_LEVEL)):
                 chroma[mcc_idx, i-18, :] = SATURATION
 
     return chroma
