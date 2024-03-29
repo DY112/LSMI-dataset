@@ -130,7 +130,7 @@ In meta.json, we provides following informations.
 
 ### Use U-Net for pixel-level AWB
 
-You can download pre-trained model parameter [here]([https://yonsei-my.sharepoint.com/:f:/g/personal/dongyoung_kim_o365_yonsei_ac_kr/EkXIAmMiJApDuaB0HNFUPfYBrNEu1PDCF7deRHDbpZkExw?e=Blw861](https://1drv.ms/f/s!AmcRzvPhtvytnVnNy7u31Unr46WD?e=zyQHua)).
+You can download pre-trained model parameter [here]([https://yonsei-my.sharepoint.com/:f:/g/personal/dongyoung_kim_o365_yonsei_ac_kr/EkXIAmMiJApDuaB0HNFUPfYBrNEu1PDCF7deRHDbpZkExw?e=Blw861](https://1drv.ms/f/s!AmcRzvPhtvytnVnNy7u31Unr46WD?e=zyQHua).
 
 Pre-trained model is trained on 512x512 data with random crop & random pixel level relighting augmentation method.
 
