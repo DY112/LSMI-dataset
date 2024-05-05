@@ -12,8 +12,8 @@
 1.1 : Add option for saving sub-pair images for 3-illuminant scene (ex. _1,_12,_13) &amp; saving subtracted image (ex. _2,_3,_23) (Feb 20, 2022)
 
 ## About
-[[Paper]](https://dykim.me/publication/lsmi/LSMI.pdf)
-[[Project site]](https://dykim.me/publication/lsmi/) 
+[[Paper]](http://openaccess.thecvf.com/content/ICCV2021/html/Kim_Large_Scale_Multi-Illuminant_LSMI_Dataset_for_Developing_White_Balance_Algorithm_ICCV_2021_paper.html)
+[[Project site]](https://www.dykim.me/home) 
 [[Download Dataset]](https://forms.gle/EjBAUzrrsWBxGX4o7)
 [[Video]](https://youtu.be/i8OAdYryig0)
 
