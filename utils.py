@@ -54,7 +54,7 @@ def plot_illum(pred_map=None,gt_map=None):
     return np.array(fig.canvas.renderer._renderer)
 
 def mix_chroma(mixmap,chroma_list,illum_count):
-    ret = np.stack((np.zeros_like(mixmap[:,:,0],dtype=np.float),)*3, axis=2)
+    ret = np.stack((np.zeros_like(mixmap[:,:,0],dtype=float),)*3, axis=2)
     for i in range(len(illum_count)):
         illum_idx = int(illum_count[i])-1
         mixmap_3ch = np.stack((mixmap[:,:,i],)*3, axis=2)
