@@ -13,7 +13,7 @@
 
 ## About
 [[Paper]](http://openaccess.thecvf.com/content/ICCV2021/html/Kim_Large_Scale_Multi-Illuminant_LSMI_Dataset_for_Developing_White_Balance_Algorithm_ICCV_2021_paper.html)
-[[Project site]](https://www.dykim.me/home) 
+[[Project site]](https://www.dykim.me/projects/lsmi) 
 [[Download Dataset]](https://forms.gle/EjBAUzrrsWBxGX4o7)
 [[Video]](https://youtu.be/i8OAdYryig0)
 
