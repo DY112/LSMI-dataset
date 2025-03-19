@@ -345,19 +345,18 @@ def get_illumination_map(place, placeInfo):
         singleimage = place + "_1"
         multiimage = place + "_12"
 
-        img_1 = cv2.imread(src_path + singleimage + ".tiff", cv2.IMREAD_UNCHANGED) - BLACK_LEVEL
-        img_12 = cv2.imread(src_path + multiimage + ".tiff", cv2.IMREAD_UNCHANGED) - BLACK_LEVEL
-        
         # prevent uint16 type subtraction underflow
-        img_1_int16 = img_1.astype("int16")
-        img_12_int16 = img_12.astype("int16")
-        img_2 = np.clip(img_12_int16 - img_1_int16, 0, SATURATION - BLACK_LEVEL)
+        img_1 = cv2.imread(src_path + singleimage + ".tiff", cv2.IMREAD_UNCHANGED).astype("int16")
+        img_12 = cv2.imread(src_path + multiimage + ".tiff", cv2.IMREAD_UNCHANGED).astype("int16")
+        
+        img_2 = np.clip(img_12 - img_1, 0, SATURATION - BLACK_LEVEL)
+        img_1 = np.clip(img_1 - BLACK_LEVEL, 0, SATURATION - BLACK_LEVEL)
 
         if SAVE_SUBTRACTED_IMG:
             cv2.imwrite(src_path + place + "_2.tiff", img_2.astype("uint16"))
 
         # calculate MCC gray cellchart RGB value (shape 3,6,3)
-        chroma_1 = get_illuminant_chroma(img_1_int16, mcc_list)
+        chroma_1 = get_illuminant_chroma(img_1, mcc_list)
         chroma_2 = get_illuminant_chroma(img_2, mcc_list)
 
         # get maximum chart,patch,chromaticity without saturation
