@@ -444,6 +444,8 @@ def get_illumination_map(place, placeInfo):
         coefficient_1 = np.where(denominator_12==0, ZERO_MASK, coefficient_1)
         coefficient_2 = img_2[:,:,1] / np.clip(denominator_12, 0.0001, SATURATION)
         coefficient_2 = np.where(denominator_12==0, ZERO_MASK, coefficient_2)
+        coefficient_1 = coefficient_1.clip(0, 1)
+        coefficient_2 = coefficient_2.clip(0, 1)
         coefficient_map_12 = np.stack((coefficient_1, coefficient_2), axis=-1)
         np.save(src_path + img_12_name, coefficient_map_12)
 
@@ -451,6 +453,8 @@ def get_illumination_map(place, placeInfo):
         coefficient_1 = np.where(denominator_13==0, ZERO_MASK, coefficient_1)
         coefficient_3 = img_3[:,:,1] / np.clip(denominator_13, 0.0001, SATURATION)
         coefficient_3 = np.where(denominator_13==0, ZERO_MASK, coefficient_3)
+        coefficient_1 = coefficient_1.clip(0, 1)
+        coefficient_3 = coefficient_3.clip(0, 1)
         coefficient_map_13 = np.stack((coefficient_1, coefficient_3), axis=-1)
         np.save(src_path + img_13_name, coefficient_map_13)
 
@@ -458,7 +462,10 @@ def get_illumination_map(place, placeInfo):
         coefficient_2 = np.where(denominator_123==0, ZERO_MASK, coefficient_2)
         coefficient_3 = img_3[:,:,1] / np.clip(denominator_123, 0.0001, SATURATION)
         coefficient_3 = np.where(denominator_123==0, ZERO_MASK, coefficient_3)
+        coefficient_2 = coefficient_2.clip(0, 1)
+        coefficient_3 = coefficient_3.clip(0, 1)
         coefficient_1 = np.where(denominator_123==0, ZERO_MASK, 1 - coefficient_2 - coefficient_3)
+        coefficient_1 = coefficient_1.clip(0, 1)
         coefficient_map = np.stack((coefficient_1, coefficient_2, coefficient_3), axis=-1)
         np.save(src_path + img_123_name, coefficient_map)
 
