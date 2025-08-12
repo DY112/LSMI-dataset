@@ -3,7 +3,7 @@
 <img width="600" alt="스크린샷 2021-08-21 오후 3 30 22" src="https://user-images.githubusercontent.com/24367643/130312876-5b2955c2-0176-4e87-ba90-7c466fa3961b.png">
 
 <!-- ABOUT THE PROJECT -->
-## Change Log
+## 📋 Change Log
 
 **LSMI Dataset Version : 1.1**
 
@@ -11,7 +11,7 @@
 
 1.1 : Add option for saving sub-pair images for 3-illuminant scene (ex. _1,_12,_13) &amp; saving subtracted image (ex. _2,_3,_23) (Feb 20, 2022)
 
-## About
+## 📖 About
 [[Paper]](http://openaccess.thecvf.com/content/ICCV2021/html/Kim_Large_Scale_Multi-Illuminant_LSMI_Dataset_for_Developing_White_Balance_Algorithm_ICCV_2021_paper.html)
 [[Project site]](https://www.dykim.me/projects/lsmi) 
 [[Download Dataset]](https://forms.gle/EjBAUzrrsWBxGX4o7)
@@ -24,18 +24,13 @@ This repository provides
 2. Code of Pixel-level illumination inference U-Net
 3. Pre-trained model parameter for testing U-Net
 
-If you use our code or dataset, please cite our paper:
-```
-@inproceedings{kim2021large,
-  title={Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm Under Mixed Illumination},
-  author={Kim, Dongyoung and Kim, Jinwoo and Nam, Seonghyeon and Lee, Dongwoo and Lee, Yeonkyung and Kang, Nahyup and Lee, Hyong-Euk and Yoo, ByungIn and Han, Jae-Joon and Kim, Seon Joo},
-  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
-  pages={2410--2419},
-  year={2021}
-}
-```
+### 🔬 Related Research: Post-Capture White Balance in Multi-Illuminant Scene
 
-## Requirements
+While the original LSMI dataset was designed for **illumination estimation from RAW images**, there is another research direction called **post-capture white balance** that works with sRGB images. 
+
+**"Revisiting Image Fusion for Multi-Illuminant White-Balance Correction"** ([here](https://github.com/davidserra9/revisitingMIWB)) is a recent study that repurposes the LSMI dataset for post-capture WB research. This work, presented at ICCV 2025, demonstrates how the LSMI dataset can be adapted for sRGB-level white balance correction, opening new possibilities for multi-illuminant scene processing in the post-capture domain.
+
+## ⚙️ Requirements
 Our running environment is as follows:
 
 - Python version 3.8.3
@@ -49,15 +44,16 @@ You can download the docker image [here](https://hub.docker.com/r/dongyoung95/to
 The following instructions are assumed to run in a docker container that uses the docker image we provided.
 
 <!-- GETTING STARTED -->
-## Getting Started
-### Clone this repo
+## 🚀 Getting Started
+
+### 1. Clone this repo
 In the docker container, clone this repository first.
 
 ```sh
 git clone https://github.com/DY112/LSMI-dataset.git
 ```
 
-### Download the LSMI dataset
+### 2. Download the LSMI dataset
 You should first download the LSMI dataset from [here](https://forms.gle/EjBAUzrrsWBxGX4o7).
 
 The dataset is composed of 3 sub-folers named "galaxy", "nikon", "sony".
@@ -74,10 +70,9 @@ In meta.json, we provides following informations.
 - MCCCoord : Locations of Macbeth color chart
 - Light1,2,3 : Normalized chromaticities of each illuminant (calculated through running 1_make_mixture_map.py)
 
+### 3. Preprocess the LSMI dataset
 
-### Preprocess the LSMI dataset
-
-0. Convert raw images to tiff files  
+#### 3.1 Convert raw images to tiff files  
    
    To convert original 1-channel bayer-pattern images to 3-channel RGB tiff images, run following code:
 
@@ -94,7 +89,7 @@ In meta.json, we provides following informations.
 
    You can change the parameters as appropriate for your purpose.
 
-1. Make mixture map
+#### 3.2 Make mixture map
    ```sh
    python 1_make_mixture_map.py
    ```
@@ -111,7 +106,7 @@ In meta.json, we provides following informations.
 
    :warning: If you run this code with **ZERO_MASK=-1**, the full resolution mixture map may contains -1 for uncalculable pixels. You **MUST** replace this value appropriately before resizing to prevent this negative value from interpolating with other values.
 
-2. Crop for train/test U-Net (Optional)
+#### 3.3 Crop for train/test U-Net (Optional)
    ```sh
    python 2_preprocess_data.py
    ```
@@ -128,7 +123,7 @@ In meta.json, we provides following informations.
 
    The new dataset is created in a folder with the name of the CAMERA_SIZE. (Ex. galaxy_512)
 
-### Use U-Net for pixel-level AWB
+### 4. Use U-Net for pixel-level AWB
 
 You can download pre-trained model parameter [here](https://1drv.ms/f/s!AmcRzvPhtvytnVnNy7u31Unr46WD?e=zyQHua).
 
@@ -148,7 +143,19 @@ Locate downloaded **models** folder into **SVWB_Unet**.
   sh train.sh
   ```
 
-## Dataset License
+## 📚 Citation
+If you use our code or dataset, please cite our paper:
+```
+@inproceedings{kim2021large,
+  title={Large Scale Multi-Illuminant (LSMI) Dataset for Developing White Balance Algorithm Under Mixed Illumination},
+  author={Kim, Dongyoung and Kim, Jinwoo and Nam, Seonghyeon and Lee, Dongwoo and Lee, Yeonkyung and Kang, Nahyup and Lee, Hyong-Euk and Yoo, ByungIn and Han, Jae-Joon and Kim, Seon Joo},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={2410--2419},
+  year={2021}
+}
+```
+
+## 📄 Dataset License
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
